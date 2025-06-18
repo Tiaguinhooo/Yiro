@@ -6,7 +6,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet" />
-  <title>Marketplace Home</title>
+  <title>Sell Product - Marketplace</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -96,69 +96,50 @@
     main {
       padding: 20px;
       margin: 20px auto;
-      max-width: 960px;
+      max-width: 600px;
       background: rgba(0, 0, 0, 0.6);
       border-radius: 8px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      color: white;
     }
-    .hero {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 40px 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
+    h1 {
       text-align: center;
-    }
-    .hero h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       color: #fff;
     }
-    .hero p {
-      font-size: 1.2rem;
-      color: #ddd;
+    form {
+      display: flex;
+      flex-direction: column;
     }
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
-      gap: 20px;
+    label {
+      margin-bottom: 6px;
+      font-weight: 600;
     }
-    .product-card {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 15px;
-      text-align: center;
-      color: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      padding: 8px 10px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      border: none;
+      font-size: 1rem;
     }
-    .product-card h3 {
-      margin: 0 0 10px 0;
+    textarea {
+      resize: vertical;
     }
-    .product-card p.price {
+    input[type="submit"] {
+      background: #ffcc00;
+      color: #000;
       font-weight: 700;
-      color: #ffcc00;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
     }
-
-    nav > ul > li > a {
-      position: relative; 
-    }
-
-    nav > ul > li > a::after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 2px;
-      bottom: -2px; 
-      left: 0;
-      background-color: currentColor;
-      transition: width 0.3s ease;
-    }
-
-    nav > ul > li > a:hover::after {
-      width: 100%;
-    }
-
-    a::after {
-      content: none;
+    input[type="submit"]:hover {
+      background: #e6b800;
     }
   </style>
 </head>
@@ -181,23 +162,26 @@
   </nav>
 
   <main>
-    <section class="hero">
-      <h1>Welcome to Yuri</h1>
-      <p>Discover our products from various categories</p>
-    </section>
+    <h1>Sell Your Product</h1>
+    <form action="/sell" method="POST">
+      <label for="name">Product Name</label>
+      <input type="text" id="name" name="name" required />
 
-    <section class="products-grid">
-      <% products.forEach(prod => { %>
-        <div class="product-card">
-          <h3><%= prod.Name %></h3>
-          <% if (prod.price !== null && !isNaN(prod.price)) { %>
-            <p class="price">$<%= prod.price.toFixed(2) %></p>
-          <% } else { %>
-            <p class="price">N/A</p>
-          <% } %>
-        </div>
-      <% }) %>
-    </section>
+      <label for="price">Price ($)</label>
+      <input type="number" id="price" name="price" min="0" step="0.01" required />
+
+      <label for="category">Category</label>
+      <select id="category" name="category" required>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat.ID %>"><%= cat.Name %></option>
+        <% }) %>
+      </select>
+
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="4"></textarea>
+
+      <input type="submit" value="Submit Product" />
+    </form>
   </main>
 </body>
 </html>

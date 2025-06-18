@@ -56,7 +56,6 @@
       color: #000;
     }
 
-    /* Dropdown */
     nav ul li ul.dropdown {
       position: absolute;
       top: 100%;
@@ -80,14 +79,14 @@
       padding: 8px 12px;
       color: #333;
       font-weight: normal;
-      position: static; /* no relative positioning */
+      position: static; 
     }
     nav ul li ul.dropdown li a:hover {
       background: #ddd;
       color: #000;
     }
     nav ul li ul.dropdown li a::after {
-      content: none; /* remove underline from dropdown */
+      content: none; 
     }
 
     main {
@@ -135,9 +134,8 @@
       color: #ffcc00;
     }
 
-    /* Underline animation only for top-level nav links */
     nav > ul > li > a {
-      position: relative; /* needed for ::after */
+      position: relative; 
     }
 
     nav > ul > li > a::after {
@@ -145,7 +143,7 @@
       position: absolute;
       width: 0;
       height: 2px;
-      bottom: -2px; /* <-- adjusted to hug text better */
+      bottom: -2px; 
       left: 0;
       background-color: currentColor;
       transition: width 0.3s ease;
@@ -155,7 +153,6 @@
       width: 100%;
     }
 
-    /* Remove global underline on other <a> */
     a::after {
       content: none;
     }

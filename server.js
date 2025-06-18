@@ -97,7 +97,7 @@ app.post('/login', (req, res) => {
 	});
 });
 
-// Registro
+// API Registro de Route
 app.post('/register', async (req, res) => {
 	try {
 		const { Username, Email, Password } = req.body;
@@ -123,7 +123,6 @@ app.post('/register', async (req, res) => {
 			[Username, Email, hashedPassword, role]
 		);
 
-		// Log registration activity
 		logActivity(result.insertId, 'REGISTER', `User ${Username} registered`);
 
 		res.redirect('/');
@@ -236,19 +235,16 @@ app.get('/admin/users', async (req, res) => {
 		const countQuery = `SELECT COUNT(*) as total FROM users ${whereSql}`;
 		const [countRows] = await db.promise().query(countQuery, params);
 		const totalUsers = countRows[0].total;
-		const totalPages = Math.ceil(totalUsers / pageSize);
 
-		// Valida página para não passar do total
+		const totalPages = Math.ceil(totalUsers / pageSize);
 		const currentPage = Math.min(Math.max(page, 1), totalPages || 1);
 
-		// Campos permitidos para ordenação
 		const allowedSortFields = ['Username', 'Email', 'Role', 'Registration Date'];
 		const allowedOrder = ['ASC', 'DESC'];
 
 		const sortField = allowedSortFields.includes(sort) ? sort : 'Username';
 		const sortOrder = allowedOrder.includes(order.toUpperCase()) ? order.toUpperCase() : 'ASC';
 
-		// Query para buscar os usuários paginados
 		const offset = (currentPage - 1) * pageSize;
 
 		const dataQuery = `
@@ -259,12 +255,10 @@ app.get('/admin/users', async (req, res) => {
 			LIMIT ? OFFSET ?
 		`;
 
-		// Passa parâmetros + limite e offset
 		const dataParams = [...params, pageSize, offset];
 
 		const [users] = await db.promise().query(dataQuery, dataParams);
 
-		// Renderiza a página enviando todos os dados para a view funcionar com paginação, filtros etc
 		res.render('user-management', {
 			users,
 			search,
@@ -281,7 +275,6 @@ app.get('/admin/users', async (req, res) => {
 	}
 });
 
-// FORMULÁRIO DE EDIÇÃO
 app.get('/admin/users/:id/edit', (req, res) => {
 	if (!req.session.user || req.session.user.Role !== 'admin') {
 		return res.redirect('/');
@@ -299,7 +292,6 @@ app.get('/admin/users/:id/edit', (req, res) => {
 	});
 });
 
-// POST PARA ATUALIZAR USUÁRIO COM NOTIFICAÇÃO
 app.post('/admin/users/:id/edit', async (req, res) => {
 	if (!req.session.user || req.session.user.Role !== 'admin') {
 		return res.redirect('/');
@@ -337,7 +329,6 @@ app.post('/admin/users/:id/edit', async (req, res) => {
 	}
 });
 
-// DELETAR USUÁRIO
 app.delete('/admin/users/:id', (req, res) => {
 	if (!req.session.user || req.session.user.Role !== 'admin') {
 		return res.redirect('/');
@@ -359,7 +350,6 @@ app.delete('/admin/users/:id', (req, res) => {
 				return res.status(500).send("Server error");
 			}
 
-			// Log delete activity
 			logActivity(userId, 'DELETE_USER', `User ${username} deleted`);
 
 			res.redirect('/admin/users');
@@ -378,7 +368,6 @@ async function logActivity(userId, action, details = '') {
   }
 }
 
-// LOGOUT
 app.get('/logout', (req, res) => {
 	if (req.session.user && req.session.user.Username) {
 		const userIdQuery = "SELECT ID FROM users WHERE Username = ? LIMIT 1";
@@ -423,7 +412,6 @@ app.get('/admin/activity-logs', async (req, res) => {
 
 		const whereSql = whereClauses.length > 0 ? 'WHERE ' + whereClauses.join(' AND ') : '';
 
-		// Conta total para paginação
 		const countQuery = `SELECT COUNT(*) as total FROM activity_logs ${whereSql}`;
 		const [countRows] = await db.promise().query(countQuery, params);
 		const totalLogs = countRows[0].total;
@@ -444,7 +432,6 @@ app.get('/admin/activity-logs', async (req, res) => {
 		const logsParams = [...params, pageSize, offset];
 		const [logs] = await db.promise().query(logsQuery, logsParams);
 
-		// Para filtro de usuário, lista todos os usuários para dropdown
 		const [users] = await db.promise().query("SELECT ID, Username FROM users ORDER BY Username");
 
 		res.render('activity-logs', {
@@ -477,6 +464,7 @@ app.post('/admin/activity-logs/clear', async (req, res) => {
 	}
 });
 
+// TUDO PARA BAIXO É DEBUG APENAS
 // Debug route para ver data da sessão
 app.get('/session-info', (req, res) => {
 	res.json(req.session.user || 'No session user');

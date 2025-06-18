@@ -1,5 +1,3 @@
-// Para run é só fazer node no terminal
-// Frameworks
 const sql = require('mysql2');
 const express = require('express');
 const path = require('path');
@@ -42,17 +40,14 @@ app.listen(port, () => {
 	console.log(`Server running: http://localhost:${port}`);
 });
 
-// Página de login
 app.get('/', (req, res) => {
 	res.render('login', { error: null });
 });
 
-// Página de registro
 app.get('/register', (req, res) => {
 	res.render('register', { error: null });
 });
 
-// Login
 app.post('/login', (req, res) => {
 	const { Username, Password } = req.body;
 
@@ -82,7 +77,6 @@ app.post('/login', (req, res) => {
 
 			req.session.user = { Username: user.Username, Role: user.Role };
 
-			// Log login activity
 			logActivity(user.ID, 'LOGIN', `User ${user.Username} logged in`);
 
 			if (user.Role === 'admin') {
@@ -97,7 +91,6 @@ app.post('/login', (req, res) => {
 	});
 });
 
-// API Registro de Route
 app.post('/register', async (req, res) => {
 	try {
 		const { Username, Email, Password } = req.body;
@@ -132,7 +125,6 @@ app.post('/register', async (req, res) => {
 	}
 });
 
-// Página principal (utilizador comum)
 app.get('/index', (req, res) => {
 	if (!req.session.user) {
 		return res.redirect('/');
@@ -199,13 +191,11 @@ app.get('/admin', async (req, res) => {
 	}
 });
 
-// LISTAR USUÁRIOS COM PESQUISA, FILTRO, ORDENAÇÃO, PAGINAÇÃO E NOTIFICAÇÃO
 app.get('/admin/users', async (req, res) => {
 	if (!req.session.user || req.session.user.Role !== 'admin') {
 		return res.redirect('/');
 	}
 
-	// Recebe os filtros e parâmetros da query string
 	const search = req.query.search || '';
 	const role = req.query.role || '';
 	const sort = req.query.sort || 'Username';
@@ -215,7 +205,6 @@ app.get('/admin/users', async (req, res) => {
 	const pageSize = 10; // itens por página
 
 	try {
-		// Monta o WHERE dinamicamente conforme filtros
 		let whereClauses = [];
 		let params = [];
 
@@ -231,7 +220,6 @@ app.get('/admin/users', async (req, res) => {
 
 		const whereSql = whereClauses.length > 0 ? 'WHERE ' + whereClauses.join(' AND ') : '';
 
-		// Conta total de usuários para paginação
 		const countQuery = `SELECT COUNT(*) as total FROM users ${whereSql}`;
 		const [countRows] = await db.promise().query(countQuery, params);
 		const totalUsers = countRows[0].total;
@@ -319,7 +307,6 @@ app.post('/admin/users/:id/edit', async (req, res) => {
 			[Username, Email, Role, userId]
 		);
 
-		// Log update activity
 		logActivity(userId, 'UPDATE_USER', `User ${Username} updated`);
 
 		res.redirect('/admin/users?success=1');
@@ -394,7 +381,7 @@ app.get('/admin/activity-logs', async (req, res) => {
 	const userIdFilter = req.query.userId || '';
 	const actionFilter = req.query.action || '';
 	const page = parseInt(req.query.page) || 1;
-	const pageSize = 10;
+	const pageSize = 20;
 
 	try {
 		let whereClauses = [];
@@ -464,8 +451,6 @@ app.post('/admin/activity-logs/clear', async (req, res) => {
 	}
 });
 
-// TUDO PARA BAIXO É DEBUG APENAS
-// Debug route para ver data da sessão
 app.get('/session-info', (req, res) => {
 	res.json(req.session.user || 'No session user');
 });

@@ -176,14 +176,30 @@ app.get('/admin', async (req, res) => {
 			count: row.count
 		}));
 
+		const [userCountResult] = await db.promise().query("SELECT COUNT(*) AS total FROM users");
+		const totalUsers = userCountResult[0].total;
+
 		const [users] = await db.promise().query(
 			"SELECT ID, Username, Email, Role FROM users ORDER BY Username"
 		);
 
+		const [activeTodayRows] = await db.promise().query(`
+			SELECT COUNT(DISTINCT UserID) as activeUsersToday
+			FROM activity_logs
+			WHERE Action = 'LOGIN'
+			AND DATE(Timestamp) = CURDATE()
+		`);
+
+		const activeUsersToday = activeTodayRows[0].activeUsersToday || 0;
+
+		console.log("Rendering admin page, activeUsersToday:", activeUsersToday);
+
 		res.render('admin', {
 			user: req.session.user,
 			loginsPerDay,
-			users
+			users,
+			totalUsers,
+			activeUsersToday
 		});
 	} catch (error) {
 		console.error("Erro ao buscar dados de login por dia:", error);
@@ -381,7 +397,7 @@ app.get('/admin/activity-logs', async (req, res) => {
 	const userIdFilter = req.query.userId || '';
 	const actionFilter = req.query.action || '';
 	const page = parseInt(req.query.page) || 1;
-	const pageSize = 20;
+	const pageSize = 25;
 
 	try {
 		let whereClauses = [];

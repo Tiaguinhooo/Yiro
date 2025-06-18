@@ -192,8 +192,6 @@ app.get('/admin', async (req, res) => {
 
 		const activeUsersToday = activeTodayRows[0].activeUsersToday || 0;
 
-		console.log("Rendering admin page, activeUsersToday:", activeUsersToday);
-
 		res.render('admin', {
 			user: req.session.user,
 			loginsPerDay,

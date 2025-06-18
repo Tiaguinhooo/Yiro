@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet" />
+  <title>Marketplace Home</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      color: white;
+      background: white url('/Images/background.png') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      background: #f0f0f0;
+      padding: 10px 20px;
+      border-bottom: 1px solid #ccc;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    nav div p {
+      margin: 0;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+    }
+    nav ul li {
+      position: relative;
+      margin-left: 20px;
+    }
+    nav ul li a {
+      color: #333;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 6px 8px;
+      display: inline-block;
+      transition: color 0.25s ease;
+    }
+    nav ul li a:hover {
+      color: #000;
+    }
+
+    /* Dropdown */
+    nav ul li ul.dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      min-width: 140px;
+      display: none;
+      flex-direction: column;
+      z-index: 1001;
+    }
+    nav ul li:hover > ul.dropdown {
+      display: flex;
+    }
+    nav ul li ul.dropdown li {
+      margin: 0;
+    }
+    nav ul li ul.dropdown li a {
+      display: block;
+      padding: 8px 12px;
+      color: #333;
+      font-weight: normal;
+      position: static; /* no relative positioning */
+    }
+    nav ul li ul.dropdown li a:hover {
+      background: #ddd;
+      color: #000;
+    }
+    nav ul li ul.dropdown li a::after {
+      content: none; /* remove underline from dropdown */
+    }
+
+    main {
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 960px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+    .hero {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: #ddd;
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    .product-card h3 {
+      margin: 0 0 10px 0;
+    }
+    .product-card p.price {
+      font-weight: 700;
+      color: #ffcc00;
+    }
+
+    /* Underline animation only for top-level nav links */
+    nav > ul > li > a {
+      position: relative; /* needed for ::after */
+    }
+
+    nav > ul > li > a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -2px; /* <-- adjusted to hug text better */
+      left: 0;
+      background-color: currentColor;
+      transition: width 0.3s ease;
+    }
+
+    nav > ul > li > a:hover::after {
+      width: 100%;
+    }
+
+    /* Remove global underline on other <a> */
+    a::after {
+      content: none;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div><p>Welcome, <%= user.Username %></p></div>
+    <ul>
+      <li><a href="/index">Home</a></li>
+      <li>
+        <a href="#">Categories ▼</a>
+        <ul class="dropdown">
+          <% categories.forEach(cat => { %>
+            <li><a href="/category/<%= cat.ID %>"><%= cat.Name %></a></li>
+          <% }) %>
+        </ul>
+      </li>
+      <li><a href="/logout">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <h1>Welcome to Our Marketplace</h1>
+      <p>Discover great products from a variety of categories.</p>
+    </section>
+
+    <section class="products-grid">
+      <% products.forEach(prod => { %>
+        <div class="product-card">
+          <h3><%= prod.Name %></h3>
+          <% if (prod.price !== null && !isNaN(prod.price)) { %>
+            <p class="price">$<%= prod.price.toFixed(2) %></p>
+          <% } else { %>
+            <p class="price">N/A</p>
+          <% } %>
+        </div>
+      <% }) %>
+    </section>
+  </main>
+</body>
+</html>

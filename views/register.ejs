@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/form.css" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <title>Register</title>
+  </head>
+  <body>
+    <form action="/register" method="POST" onsubmit="return validateForm()">
+      <h1>Register</h1>
+      <input type="text" name="Username" placeholder="Create Username" required>
+      <input type="email" name="Email" placeholder="Your Email" required>
+      <input type="password" id="Password" name="Password" placeholder="Create Password" required>
+      <div id="strength" style="margin-bottom: 10px;"></div>
+      <button type="submit">Register Now</button>
+      <a href="/">Have an account? Login</a>
+    </form>
+    <script>
+      function checkPasswordStrength() {
+        const pwd = document.getElementById("Password").value;
+        const strengthDisplay = document.getElementById("strength");
+
+        let strength = 0;
+        if (pwd.length >= 8) strength++;
+        if (/[A-Z]/.test(pwd)) strength++;
+        if (/[a-z]/.test(pwd)) strength++;
+        if (/[0-9]/.test(pwd)) strength++;
+        if (/[^A-Za-z0-9]/.test(pwd)) strength++;
+
+        const levels = ["Very Weak", "Weak", "Moderate", "Strong", "Very Strong"];
+        const colors = ["#ff4d4d", "#ff944d", "#ffd11a", "#99e600", "#33cc33"];
+
+        strengthDisplay.innerText = `Strength: ${levels[strength - 1] || "Too Short"}`;
+        strengthDisplay.style.color = colors[strength - 1] || "#999";
+      }
+
+      function validateForm() {
+        const pwd = document.getElementById("Password").value;
+        if (pwd.length < 8 || !/[A-Z]/.test(pwd) || !/[0-9]/.test(pwd)) {
+          alert("Password must be at least 8 characters, contain a number and an uppercase letter.");
+          return false;
+        }
+        return true;
+      }
+    </script>
+  </body>
+</html>

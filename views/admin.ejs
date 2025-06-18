@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: white url('/Images/background.png') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      min-height: 100vh;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      background: #f0f0f0;
+      padding: 10px 20px;
+      border-bottom: 1px solid #ccc;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    nav div p {
+      margin: 0;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    nav a {
+      color: #333;
+      margin-left: 15px;
+      text-decoration: none;
+      position: relative;
+      font-weight: 600;
+      transition: color 0.25s ease;
+    }
+    nav a:hover {
+      color: #000;
+    }
+    nav a::after {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 2px;
+      left: 0;
+      bottom: -3px;
+      background: currentColor;
+      transition: width 0.25s ease;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    main {
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 960px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+    h1 {
+      margin-top: 21px;
+      margin-bottom: 40px;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div><p>Admin Panel</p></div>
+    <div>
+      <a href="/admin">Admin Dashboard</a>
+      <a href="/admin/users">User Management</a>
+      <a href="/admin/activity-logs">Activity Logs</a>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+
+  <main>
+    <h1>Admin Dashboard</h1>
+
+    <h2>Logins per Day</h2>
+    <ul>
+      <% if (loginsPerDay.length === 0) { %>
+        <li>No login data available.</li>
+      <% } else { %>
+        <% loginsPerDay.forEach(item => { %>
+          <li><strong><%= item.date %>:</strong> <%= item.count %> logins</li>
+        <% }) %>
+      <% } %>
+    </ul>
+  </main>
+</body>
+</html>

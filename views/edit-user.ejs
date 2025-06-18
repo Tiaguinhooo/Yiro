@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edit User</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url('/Images/background.png');
+      color: white;
+      padding: 20px;
+    }
+    form {
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 20px;
+      border-radius: 6px;
+      max-width: 400px;
+      margin: 20px auto;
+      color: white;
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    label {
+      width: 100%;
+      margin: 10px 0 5px;
+      text-align: left;
+      display: inline-block;
+      max-width: 360px;
+      box-sizing: border-box;
+    }
+    input, select {
+      width: 100%;
+      max-width: 360px;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 3px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #3273a8;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 3px;
+      font-size: 16px;
+    }
+    a {
+      color: #ccc;
+      display: block;
+      margin-top: 15px;
+      text-align: center;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    select option {
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  
+  <% if (error) { %>
+    <p style="color: red;"><%= error %></p>
+  <% } %>
+  <form action="/admin/users/<%= user.ID %>/edit" method="POST">
+    <h1 style="text-align: center;">Edit User</h1>
+    <label for="Username">Username</label>
+    <input type="text" id="Username" name="Username" value="<%= user.Username %>" required />
+
+    <label for="Email">Email</label>
+    <input type="email" id="Email" name="Email" value="<%= user.Email %>" required />
+
+    <label for="Role">Role</label>
+    <select id="Role" name="Role" required>
+      <option value="user" <%= user.Role === 'user' ? 'selected' : '' %>>User</option>
+      <option value="admin" <%= user.Role === 'admin' ? 'selected' : '' %>>Admin</option>
+    </select>
+
+    <button type="submit">Save</button>
+  </form>
+  <a href="/admin/users">Back to User Management</a>
+</body>
+</html>

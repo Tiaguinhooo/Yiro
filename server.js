@@ -52,7 +52,7 @@ app.post('/login', (req, res) => {
 	const { Username, Password } = req.body;
 
 	if (!Username || !Password) {
-		return res.status(400).render('login', { error: "Preencha o nome de utilizador e a palavra-passe" });
+		return res.status(400).render('login', { error: "Please fill the Username and Password" });
 	}
 
 	const query = "SELECT * FROM users WHERE Username = ? LIMIT 1";
@@ -60,11 +60,11 @@ app.post('/login', (req, res) => {
 	db.query(query, [Username], async (err, results) => {
 		if (err) {
 			console.error("DB error:", err);
-			return res.status(500).render('login', { error: "Erro de servidor" });
+			return res.status(500).render('login', { error: "Server error" });
 		}
 
 		if (results.length === 0) {
-			return res.status(401).render('login', { error: "Credenciais inválidas" });
+			return res.status(401).render('login', { error: "Invalid Credentials" });
 		}
 
 		try {
@@ -72,7 +72,7 @@ app.post('/login', (req, res) => {
 			const match = await bcrypt.compare(Password, user.Password);
 
 			if (!match) {
-				return res.status(401).render('login', { error: "Credenciais inválidas" });
+				return res.status(401).render('login', { error: "Invalid Credentials" });
 			}
 
 			req.session.user = { Username: user.Username, Role: user.Role };
@@ -86,7 +86,7 @@ app.post('/login', (req, res) => {
 			res.redirect('/index');
 		} catch (compareErr) {
 			console.error("Compare error:", compareErr);
-			res.status(500).render('login', { error: "Erro no servidor" });
+			res.status(500).render('login', { error: "Server error" });
 		}
 	});
 });

@@ -161,22 +161,8 @@ app.post('/sell', (req, res) => {
 		return res.redirect('/');
 	}
 
-	const { name, price, description } = req.body;
-
-	if (!name || !price) {
-		return res.status(400).send("Name and price are required.");
-	}
-
-	const publisherID = req.session.user.ID;
-
-	const sql = 'INSERT INTO products (Name, Price, Description, PublisherID) VALUES (?, ?, ?, ?)';
-	db.query(sql, [name, price, description || null, publisherID], (err, result) => {
-		if (err) {
-			console.error("Error inserting product:", err);
-			return res.status(500).send("Error saving product.");
-		}
-		
-		res.redirect('/'); 
+	res.render('sell', {
+		user: req.session.user
 	});
 });
 

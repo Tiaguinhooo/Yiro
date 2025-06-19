@@ -160,6 +160,38 @@
     a::after {
       content: none;
     }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .category-button {
+      display: block;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      text-align: center;
+      padding: 14px 10px;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .category-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .section-heading {
+      font-size: 1.8rem;
+      color: white;
+      margin-bottom: 20px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -184,6 +216,15 @@
     <section class="hero">
       <h1>Welcome to Yuri</h1>
       <p>Discover our products from various categories</p>
+    </section>
+
+    <section>
+      <h2 class="section-heading">Categories</h2>
+      <div class="categories-grid">
+        <% categories.forEach(cat => { %>
+          <a class="category-button" href="/category/<%= cat.ID %>"><%= cat.Name %></a>
+        <% }) %>
+      </div>
     </section>
 
     <section class="products-grid">

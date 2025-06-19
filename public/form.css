@@ -10,6 +10,8 @@ body {
   justify-content: center;
   align-items: center;
   background-image: url('/Images/background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
   font-family: "Open Sans", "Arial";
   overflow: hidden;
 }

@@ -240,12 +240,10 @@ app.post('/sell', (req, res) => {
 		[name, price, description, categoryID, publisherID],
 		(err) => {
 			if (err) return res.status(500).send('DB error adding product');
-			res.redirect('/'); 
+			res.redirect(`/category/${category}`); 
 		}
 	);
 });
-
-
 
 app.get('/admin', async (req, res) => {
 	if (!req.session.user || req.session.user.Role !== 'admin') {

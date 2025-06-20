@@ -226,7 +226,7 @@ app.get('/admin/users', async (req, res) => {
 	const order = req.query.order || 'ASC';
 	const success = req.query.success === '1' ? true : false;
 	const page = parseInt(req.query.page) || 1;
-	const pageSize = 10; // itens por página
+	const pageSize = 10; 
 
 	try {
 		let whereClauses = [];

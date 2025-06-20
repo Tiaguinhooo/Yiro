@@ -153,7 +153,7 @@ app.get('/index', (req, res) => {
 			user,
 			products,
 			categories: catResults,
-			welcomeText: `Welcome, ${user.Username}`
+			welcomeText: `Welcome to Yuri, ${user.Username}!`
 		});
 		});  
 	});  
@@ -163,6 +163,8 @@ app.get('/category/:id', (req, res) => {
 	if (!req.session.user) {
 		return res.redirect('/');
 	}
+
+	const success = req.query.success === '1';
 
 	const categoryId = parseInt(req.params.id, 10);
 	if (isNaN(categoryId)) {
@@ -201,7 +203,8 @@ app.get('/category/:id', (req, res) => {
 			categories: catResults,
 			category,
 			products,
-			welcomeText: `${category.Name}`
+			welcomeText: `${category.Name}`,
+			success
 			});
 		});
 		});
@@ -240,7 +243,7 @@ app.post('/sell', (req, res) => {
 		[name, price, description, categoryID, publisherID],
 		(err) => {
 			if (err) return res.status(500).send('DB error adding product');
-			res.redirect(`/category/${category}`); 
+			res.redirect(`/category/${categoryID}?success=1`); 
 		}
 	);
 });
@@ -457,7 +460,7 @@ app.get('/admin/products', (req, res) => {
 	const sort = req.query.sort || 'ID';
 	const order = req.query.order || 'ASC';
 	const page = parseInt(req.query.page) || 1;
-	const limit = 10;
+	const limit = 20;
 	const offset = (page - 1) * limit;
 
 	let whereClause = 'WHERE 1=1';

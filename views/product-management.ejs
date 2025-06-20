@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet" />
     <title>Product Management</title>
     <style>
-      body::-webkit-scrollbar {
+      ::-webkit-scrollbar {
         display: none;
       }
       body {
@@ -71,7 +71,7 @@
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
         border-radius: 8px;
         box-sizing: border-box;
-        overflow-x: auto; /* horizontal scroll if needed */
+        overflow-x: auto; 
       }
 
       .notification {
@@ -129,8 +129,6 @@
       form.search-form button:hover {
         background: #333;
       }
-
-      /* TABLE */
       table {
         width: 100%;
         border-collapse: collapse;
@@ -163,8 +161,6 @@
       tr:hover {
         background: rgba(255, 255, 255, 0.1);
       }
-
-      /* Sort icons */
       th::after {
         content: "";
         position: absolute;
@@ -173,9 +169,7 @@
         transform: translateY(-50%);
         font-size: 0.7rem;
       }
-
-      /* Columns widths */
-      table th:nth-child(1),  /* Name */
+      table th:nth-child(1), 
       table td:nth-child(1) {
         width: 220px;
         max-width: 220px;
@@ -183,35 +177,33 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      table th:nth-child(2), /* Price */
+      table th:nth-child(2), 
       table td:nth-child(2) {
         width: 90px;
         max-width: 90px;
         text-align: right;
         white-space: nowrap;
       }
-      table th:nth-child(3), /* Description */
+      table th:nth-child(3), 
       table td:nth-child(3) {
         max-width: 380px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      table th:nth-child(4), /* Category */
+      table th:nth-child(4), 
       table td:nth-child(4) {
         width: 150px;
         max-width: 150px;
         white-space: nowrap;
       }
-      table th:nth-child(5), /* PublisherID */
+      table th:nth-child(5), 
       table td:nth-child(5) {
         width: 80px;
         max-width: 80px;
         white-space: nowrap;
         text-align: center;
       }
-
-      /* Action buttons inline in same cell */
       td:last-child {
         white-space: nowrap;
       }

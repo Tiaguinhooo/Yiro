@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet" />
     <title><%= category.Name %> - Yuri Marketplace</title>
     <style>
+      ::-webkit-scrollbar {
+        display: none;
+      }
       body {
         font-family: Arial, sans-serif;
         margin: 0; padding: 0;
@@ -168,6 +171,25 @@
       a::after {
         content: none;
       }
+      .notification {
+        background: #28a745; 
+        color: white;
+        padding: 15px 25px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 1.3rem;
+        text-align: center;
+        margin: 15px auto;
+        max-width: 600px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        animation: fade-in 0.4s ease-in-out;
+      }
+
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
     </style>
   </head>
   <body>
@@ -187,13 +209,23 @@
         <li><a href="/logout">Logout</a></li>
       </ul>
     </nav>
-
     <main>
+      <% if (success) { %>
+        <div class="notification">
+          ✅ Sold item successfully!
+        </div>
+        <script>
+          setTimeout(() => {
+            const notif = document.querySelector('.notification');
+            if (notif) notif.remove();
+          }, 3000);
+        </script>
+      <% } %>
+
       <section class="hero">
         <h1><%= category.Name %></h1>
         <p><%= category.Description %></p>
       </section>
-
       <section class="products-grid">
         <% if (products.length === 0) { %>
           <p style="text-align:center; color:#ccc;">No products found in this category.</p>

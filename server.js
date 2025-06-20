@@ -208,16 +208,44 @@ app.get('/category/:id', (req, res) => {
 	});
 });
 
+app.get('/sell', (req, res) => {
+	if (!req.session.user) {
+		return res.redirect('/');
+	}
+
+	db.query('SELECT * FROM categories', (err, results) => {
+		if (err) return res.status(500).send('DB error fetching categories');
+		
+		res.render('sell', {
+			user: req.session.user,
+			categories: results
+		});
+	});
+});
 
 app.post('/sell', (req, res) => {
 	if (!req.session.user) {
 		return res.redirect('/');
 	}
 
-	res.render('sell', {
-		user: req.session.user
-	});
+	const { name, price, description, categoryID } = req.body;
+	const publisherID = req.session.user.ID;
+
+	if (!name || !price || !categoryID) {
+		return res.status(400).send('Missing required fields');
+	}
+
+	db.query(
+		'INSERT INTO products (Name, Price, Description, CategoryID, PublisherID) VALUES (?, ?, ?, ?, ?)',
+		[name, price, description, categoryID, publisherID],
+		(err) => {
+			if (err) return res.status(500).send('DB error adding product');
+			res.redirect('/'); 
+		}
+	);
 });
+
+
 
 app.get('/admin', async (req, res) => {
 	if (!req.session.user || req.session.user.Role !== 'admin') {

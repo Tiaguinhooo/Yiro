@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet" />
-    <title>Sell</title>
+    <title>Sell a Product</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -73,7 +70,7 @@
         min-width: 160px;
         display: none;
         flex-direction: column;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         padding: 5px 0;
       }
@@ -117,8 +114,56 @@
         width: 100%;
       }
 
-      a::after {
-        content: none;
+      main {
+        padding: 40px 20px;
+        max-width: 600px;
+        margin: 40px auto;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 25px;
+      }
+
+      form label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      form input, form select, form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: none;
+        font-size: 16px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      form select option {
+        color: black;
+      }
+
+      form button {
+        width: 100%;
+        padding: 12px;
+        background: #3273a8;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      form button:hover {
+        background: #205b8a;
       }
     </style>
   </head>
@@ -139,5 +184,30 @@
         <li><a href="/logout">Logout</a></li>
       </ul>
     </nav>
+
+    <main>
+      <form action="/sell" method="POST">
+        <h2>Sell a Product</h2>
+
+        <label for="name">Product Name</label>
+        <input type="text" name="name" id="name" required />
+
+        <label for="price">Price (€)</label>
+        <input type="number" name="price" id="price" step="0.01" required />
+
+        <label for="description">Description</label>
+        <textarea name="description" id="description" rows="4" placeholder="Optional description..."></textarea>
+
+        <label for="categoryID">Category</label>
+        <select name="categoryID" id="categoryID" required>
+          <option disabled selected>Select a category</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat.ID %>"><%= cat.Name %></option>
+          <% }) %>
+        </select>
+
+        <button type="submit">Sell Product</button>
+      </form>
+    </main>
   </body>
 </html>

@@ -130,6 +130,8 @@ app.get('/index', (req, res) => {
 		return res.redirect('/');
 	}
 
+	const user = req.session.user;
+
 	db.query('SELECT * FROM categories', (catErr, catResults) => {
 		if (catErr) {
 		console.error(catErr);
@@ -148,13 +150,64 @@ app.get('/index', (req, res) => {
 		}));
 
 		res.render('index', {
-			user: req.session.user,
+			user,
 			products,
-			categories: catResults
+			categories: catResults,
+			welcomeText: `Welcome, ${user.Username}`
 		});
 		});  
 	});  
 });  
+
+app.get('/category/:id', (req, res) => {
+	if (!req.session.user) {
+		return res.redirect('/');
+	}
+
+	const categoryId = parseInt(req.params.id, 10);
+	if (isNaN(categoryId)) {
+		return res.status(400).send('Invalid category ID');
+	}
+
+	db.query('SELECT * FROM categories', (catErr, catResults) => {
+		if (catErr) {
+		console.error(catErr);
+		return res.status(500).send('Database error loading categories');
+		}
+
+		db.query('SELECT * FROM categories WHERE ID = ?', [categoryId], (selCatErr, selCatResults) => {
+		if (selCatErr) {
+			console.error(selCatErr);
+			return res.status(500).send('Database error loading category');
+		}
+		if (selCatResults.length === 0) {
+			return res.status(404).send('Category not found');
+		}
+		const category = selCatResults[0];
+
+		db.query('SELECT * FROM products WHERE CategoryID = ?', [categoryId], (prodErr, prodResults) => {
+			if (prodErr) {
+			console.error(prodErr);
+			return res.status(500).send('Database error loading products');
+			}
+
+			const products = prodResults.map(prod => ({
+			...prod,
+			price: prod.Price ? parseFloat(prod.Price) : null
+			}));
+
+			res.render('category', {
+			user: req.session.user,
+			categories: catResults,
+			category,
+			products,
+			welcomeText: `${category.Name}`
+			});
+		});
+		});
+	});
+});
+
 
 app.post('/sell', (req, res) => {
 	if (!req.session.user) {
@@ -368,15 +421,155 @@ app.delete('/admin/users/:id', (req, res) => {
 	});
 });
 
+app.get('/admin/products', (req, res) => {
+	if (!req.session.user) {
+		return res.redirect('/');
+	}
+
+	const search = req.query.search || '';
+	const category = req.query.category || '';
+	const sort = req.query.sort || 'ID';
+	const order = req.query.order || 'ASC';
+	const page = parseInt(req.query.page) || 1;
+	const limit = 10;
+	const offset = (page - 1) * limit;
+
+	let whereClause = 'WHERE 1=1';
+	const params = [];
+
+	if (search) {
+		whereClause += ' AND (Name LIKE ? OR Description LIKE ?)';
+		params.push(`%${search}%`, `%${search}%`);
+	}
+
+	if (category) {
+		whereClause += ' AND CategoryID = ?';
+		params.push(category);
+	}
+
+	const queryCount = `SELECT COUNT(*) as count FROM products ${whereClause}`;
+	const queryProducts = `
+		SELECT p.*, c.Name AS CategoryName
+		FROM products p
+		LEFT JOIN categories c ON p.CategoryID = c.ID
+		${whereClause}
+		ORDER BY ${sort} ${order}
+		LIMIT ? OFFSET ?
+	`;
+
+	params.push(limit, offset);
+
+	db.query('SELECT ID, Name FROM categories', (err, categories) => {
+		if (err) {
+			console.error('Error loading categories:', err);
+			return res.status(500).send('Error loading categories');
+		}
+
+		db.query(queryCount, params.slice(0, -2), (err, countResult) => {
+			if (err) {
+				console.error(err);
+				return res.status(500).send('Error counting products');
+			}
+
+			const totalItems = countResult[0].count;
+			const totalPages = Math.ceil(totalItems / limit);
+
+			db.query(queryProducts, params, (err, products) => {
+				if (err) {
+					console.error(err);
+					return res.status(500).send('Error loading products');
+				}
+
+				const productsWithParsedPrice = products.map(prod => ({
+					...prod,
+					Price: prod.Price !== null && prod.Price !== undefined ? parseFloat(prod.Price) : null
+				}));
+
+				res.render('product-management', {
+					user: req.session.user,
+					products: productsWithParsedPrice,
+					categories,
+					category,
+					search,
+					sort,
+					order,
+					currentPage: page,
+					totalPages,
+					success: req.query.success === '1'
+				});
+			});
+		});
+	});
+});
+
+app.get('/admin/products/edit/:id', (req, res) => {
+	if (!req.session.user) {
+		return res.redirect('/');
+	}	
+
+	const id = parseInt(req.params.id, 10);
+	if (isNaN(id)) return res.status(400).send('Invalid product ID');
+
+	db.query('SELECT * FROM products WHERE ID = ?', [id], (err, results) => {
+		if (err) return res.status(500).send('DB error');
+		if (results.length === 0) return res.status(404).send('Product not found');
+
+		const product = results[0];
+
+		db.query('SELECT ID, Name FROM categories', (err, categories) => {
+			if (err) return res.status(500).send('Error loading categories');
+
+			res.render('product-edit', {
+				user: req.session.user,
+				product,
+				categories,  
+				error: null
+			});
+		});
+	});
+});
+
+
+app.post('/admin/products/edit/:id', (req, res) => {
+	if (!req.session.user) return res.redirect('/');
+
+	const id = parseInt(req.params.id, 10);
+	const { Name, Price, Description, CategoryID, PublisherID } = req.body;
+
+	if (isNaN(id)) return res.status(400).send('Invalid product ID');
+
+	db.query(
+		'UPDATE products SET Name=?, Price=?, Description=?, CategoryID=?, PublisherID=? WHERE ID=?',
+		[Name, Price, Description, CategoryID, PublisherID, id],
+		err => {
+		if (err) return res.status(500).send('Error updating product');
+		res.redirect('/admin/products?success=1');
+		}
+	);
+});
+
+app.post('/admin/products/delete/:id', (req, res) => {
+	if (!req.session.user) return res.redirect('/');
+
+	const id = parseInt(req.params.id, 10);
+	if (isNaN(id)) return res.status(400).send('Invalid product ID');
+
+	db.query('DELETE FROM products WHERE ID=?', [id], err => {
+		if (err) return res.status(500).send('Error deleting product');
+		res.redirect('/admin/products');
+	});
+});
+
+
 async function logActivity(userId, action, details = '') {
-  try {
-    await db.promise().query(
-      "INSERT INTO activity_logs (UserID, Action, Details) VALUES (?, ?, ?)",
-      [userId, action, details]
-    );
-  } catch (error) {
-    console.error("Error logging activity:", error);
-  }
+	try {
+		await db.promise().query(
+		"INSERT INTO activity_logs (UserID, Action, Details) VALUES (?, ?, ?)",
+		[userId, action, details]
+		);
+	} catch (error) {
+		console.error("Error logging activity:", error);
+	}
 }
 
 app.get('/logout', (req, res) => {

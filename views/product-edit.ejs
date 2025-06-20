@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edit Product</title>
+  <style>
+    body ::-webkit-scrollbar {
+      width: 0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url('/Images/background.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      color: white;
+      padding: 20px;
+    }
+    form {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 6px;
+      max-width: 400px;
+      margin: 20px auto;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+    label {
+      width: 100%;
+      margin: 10px 0 5px;
+      text-align: left;
+      max-width: 360px;
+      box-sizing: border-box;
+      display: inline-block;
+    }
+    input, select, textarea {
+      width: 100%;
+      max-width: 360px;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 3px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    textarea {
+      min-height: 80px;
+    }
+    button {
+      background-color: #3273a8;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 3px;
+      font-size: 16px;
+      width: 100%;
+      max-width: 360px;
+    }
+    a {
+      color: #ccc;
+      display: block;
+      margin-top: 15px;
+      text-align: center;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    select option {
+      color: black;
+    }
+    p.error-message {
+      color: #ff4d4d;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <% if (error) { %>
+    <p class="error-message"><%= error %></p>
+  <% } %>
+
+  <form action="/admin/products/edit/<%= product.ID %>" method="POST">
+    <h1 style="text-align: center;">Edit Product</h1>
+
+    <label for="Name">Name</label>
+    <input type="text" id="Name" name="Name" value="<%= product.Name %>" required />
+
+    <label for="Price">Price</label>
+    <input type="number" step="0.01" min="0" id="Price" name="Price" value="<%= product.Price %>" required />
+
+    <label for="Description">Description</label>
+    <textarea id="Description" name="Description" required><%= product.Description %></textarea>
+
+    <label for="CategoryID">Category</label>
+    <select id="CategoryID" name="CategoryID" required>
+      <% categories.forEach(cat => { %>
+        <option value="<%= cat.ID %>" <%= product.CategoryID == cat.ID ? 'selected' : '' %>><%= cat.Name %></option>
+      <% }) %>
+    </select>
+
+    <label for="PublisherID">Publisher ID</label>
+    <input type="number" id="PublisherID" name="PublisherID" value="<%= product.PublisherID %>" required />
+
+    <button type="submit">Save</button>
+  </form>
+
+  <a href="/admin/products">Back to Product Management</a>
+</body>
+</html>
